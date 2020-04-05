@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+Copy to 
+	~/.local/share/mime/packages/
+ and run
+	update-mime-database ~/.local/share/mime/
+ -->
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+    <mime-type type="application/x-gpx">
+        <glob pattern="*.gpx"/>
+        <sub-class-of type="application/xml"/>
+        <comment>GPX</comment>
+        <comment xml:lang="de_DE">GPX</comment>
+        <root-XML namespaceURI="http://www.topografix.com/GPX/1/1" localName="gpx"/>
+    </mime-type>
+    <mime-type type="application/x-gpx-gz">
+        <glob pattern="*.gpx.gz"/>
+        <magic priority="50">
+            <match type="string" offset="0" value="\037\213"/>
+        </magic>
+        <sub-class-of type="application/gzip"/>
+        <comment>Compressed GPX</comment>
+        <comment xml:lang="de_DE">Compressed GPX</comment>
+    </mime-type>
+</mime-info>

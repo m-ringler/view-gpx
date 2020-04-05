@@ -1,0 +1,11 @@
+# Desktop entry for view-gpx
+# copy to $HOME/.local/share/applications/
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Type=Application
+Name=view-gpx
+Exec=view-gpx %F
+Categories=Office;Viewer
+Icon=view-gpx
+MimeType=application/x-gpx;application/x-gpx-gz

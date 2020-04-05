@@ -1,0 +1,84 @@
+#!/bin/bash
+# view-gpx; 2016-04-02
+# Creates Openlayers slippy maps from gpx and gpx.gz files and displays them in
+# the user's standard browser.
+#
+# Copyright (c) 2016 Moritz Ringler
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of
+# this software and associated documentation files (the "Software"), to deal in
+# the Software without restriction, including without limitation the rights to
+# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+# of the Software, and to permit persons to whom the Software is furnished to do
+# so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+# The input file
+f="$1"
+
+# Location of gpsdings.jar (see http://gpstools.sf.net)
+gpsdings=$HOME/devel/gpsdings/main/gpsdings.jar
+
+# Base layers for the slippy map (see http://gpstools.sourceforge.net/openlayers.html)
+layers="OSMMapnik OSMCyclemap OSMMapQuest OSMWanderkarteNop OSMTopo OSMTerrain"
+
+# The folder to create the map in
+folder=/tmp
+
+# The title of the map HTML file
+title=$(basename "$f")
+
+# The path of the map HTML file
+html="${folder}"/map.html
+
+# The relative path of the map Javascript file (relative to the map HTML file)
+js1=map.js
+
+# The absolute path of the map Javascript file
+js="${folder}/${js1}"
+
+# The path where stderr is redirected
+err="${folder}/error.txt"
+
+# The maximum number of waypoints in the map
+maxnumpoints=5000
+
+# Make pipe file when any of the pipe commands fails
+set -o pipefail
+
+# Clear the error file
+echo > "$err"
+
+# Test if filename ends with gpx.gz
+if [[ ${f:${#f}-6} = gpx.gz ]]
+then
+   # decompress gpx.gz, shrink, and create map
+   gzip -c -d "$f" 2>> "$err" | \
+        java -jar $gpsdings shrink -n $maxnumpoints - 2>> "$err" | \
+        java -jar $gpsdings openlayers -b "$layers" -t "$title" -x "$html" -j "$js" -J "$js1" - 2>> "$err"
+else
+  # shrink and create map
+  java -jar $gpsdings shrink -n $maxnumpoints "$f" 2>> "$err" | \
+        java -jar $gpsdings openlayers -b "$layers" -t "$title" -x "$html" -j "$js" -J "$js1" - 2>> "$err"
+fi
+
+# Pipe successful?
+if [ $? -eq 0 ]
+then
+    # Open map in browser
+    xdg-open "$html" &
+else
+    # Display errors with notify-send
+    notify-send "$(cat ${err})" &
+fi
+
