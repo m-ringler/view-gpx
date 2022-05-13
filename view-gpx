@@ -30,7 +30,7 @@ f="$1"
 gpsdings=$HOME/devel/gpsdings/main/gpsdings.jar
 
 # Base layers for the slippy map (see http://gpstools.sourceforge.net/openlayers.html)
-layers="OSMMapnik OSMCyclemap OSMMapQuest OSMWanderkarteNop OSMTopo OSMTerrain"
+layers="OSMMapnik OSMCyclemap OSMWanderkarteNop OSMTopo OSMTerrain"
 
 # The folder to create the map in
 folder=/tmp
